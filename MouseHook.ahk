@@ -40,7 +40,8 @@ class MouseHook
         520, "MButton Up",
         522, "Wheel",
         523, "XButton{:d} Down",
-        524, "XButton{:d} Up")
+        524, "XButton{:d} Up",
+        526, "WheelTilt")
 
     /** @prop {integer} Hook SetWindowsHookEx */
     Hook := 0
@@ -94,6 +95,7 @@ class MouseHook
             switch wParam {
             case 522     : this.Action := (hookInfo.mouseData>>16 > 0 ? "WheelUp" : "WheelDown")
             case 523, 524: this.Action := Format(this.MsgList[wParam], hookInfo.mouseData >> 16)
+            case 526     : this.Action := (hookInfo.mouseData>>16 > 0 ? "WheelRight" : "WheelLeft")
             default      : this.Action := (this.MsgList.Has(wParam) ? this.MsgList[wParam] : "")
             }
 
@@ -120,7 +122,7 @@ class MouseHook
                 this.Count       := pK.c += (hookInfo.time - pK.t < this.Interval) || -pK.c+1
                 this.ThisKeyTime := pK.t := hookInfo.time
                 
-                if isUp || wParam == 522 
+                if isUp || wParam == 522 || wParam == 526
                     this.keep := false
                 else {
                     this.keep := true
